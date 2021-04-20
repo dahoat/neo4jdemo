@@ -1,0 +1,14 @@
+.content {
+  margin: auto;
+  max-width: 1200px;
+  padding-bottom: 100px;
+}
+
+mat-divider {
+  margin-top: 10px;
+  margin-bottom: 15px;
+}
+
+.lecture-part {
+  margin-bottom: 30px;
+}

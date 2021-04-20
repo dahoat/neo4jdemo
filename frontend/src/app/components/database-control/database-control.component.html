@@ -1,0 +1,17 @@
+<h2 *ngIf="!button">Database Control</h2>
+
+<div class="control-button" *ngIf="!button || button=='clear'">
+  <button mat-raised-button color="warn" (click)="clearDatabase()" [disabled]="transactionInProgress">Clear Database</button>
+  <span *ngIf="clearDatabaseMessage">{{clearDatabaseMessage}}</span>
+</div>
+<div class="control-button" *ngIf="!button || button=='pokemon'">
+  <button mat-raised-button color="warn" (click)="loadPokemon()" [disabled]="transactionInProgress">Load Pokemon</button>
+  <span *ngIf="loadPokemonMessage">{{loadPokemonMessage}}</span>
+</div>
+<div class="control-button" *ngIf="!button || button=='sinnohMap'">
+  <button mat-raised-button color="warn" (click)="loadSinnohMap()" [disabled]="transactionInProgress">Load Sinnoh Map</button>
+  <span *ngIf="loadSinnohMapMessage">{{loadSinnohMapMessage}}</span>
+</div>
+
+
+

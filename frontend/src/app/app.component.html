@@ -1,0 +1,271 @@
+<mat-toolbar color="primary">Neo4J Demo Control Panel</mat-toolbar>
+
+<div class="content">
+  <app-browser></app-browser>
+  <mat-divider></mat-divider>
+  <app-database-control></app-database-control>
+
+  <mat-divider></mat-divider>
+  <h2>Basic building blocks</h2>
+
+  <div class="lecture-part">
+    Two parenthesis denote a node in cypher
+    <app-snippset query="()" copy="false"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    Two brackets are used for referencing edges
+    <app-snippset query="[]" copy="false"></app-snippset>
+  </div>
+
+
+  <div class="lecture-part">
+    Nodes and edges are connected by dashes and less/greater signs
+    <app-snippset query="-- -> <-" copy="false"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    Nodes and edges can have multiple labels which are each started by a colon. <br />
+    The case is not mandatory but significant.
+    <app-snippset query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippset>
+  </div>
+
+
+  <mat-divider></mat-divider>
+  <h2>Official Cypher Manual</h2>
+  <a href="https://neo4j.com/docs/cypher-manual/current/" target="_blank">https://neo4j.com/docs/cypher-manual/current/</a>
+
+
+  <h2>Simple MATCH queries</h2>
+
+  <div class="lecture-part">
+    For this part, you should load the Pokemon example data.
+    <app-database-control button="pokemon"></app-database-control>
+  </div>
+
+  <div class="lecture-part">
+    We will start by simply fetching all nodes in the database. Because there might be a lot of them, we limit the number of results.
+    <app-snippset query="MATCH (node) RETURN node LIMIT 25"></app-snippset>
+    The <b>MATCH</b> keyword tells the database we want to fetch some data according to a certain pattern which is/are given afterwards.
+    All elements matching parts of the pattern are stored in a variable if one is given, in our case it is called <b>node</b>.
+    The last part of the query is the <b>RETURN</b> after which all variables we want in our result are specified, in our case only <b>node</b>.
+    The optional <b>LIMIT</b> caps the results after the given number.
+    Without this, our database would return us 916 elements for the Pokemon test dataset.
+  </div>
+
+  <div class="lecture-part">
+    If we only want a specific type of nodes, we can specify this by adding a label to the pattern.
+    <app-snippset query="MATCH (pokemon:Pokemon) RETURN pokemon LIMIT 25"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    To show the difference, we now query the types Pokemon can have.
+    <app-snippset query="MATCH (t:Type) RETURN t"></app-snippset>
+    Because there are only 18, we can omit the <b>LIMIT</b>.
+  </div>
+
+  <div class="lecture-part">
+    In this example we combine the previous two queries by specifying two patterns.
+    <app-snippset query="MATCH (p:Pokemon), (t:Type) RETURN p, t LIMIT 25"></app-snippset>
+    We now limit the number of results again to 25.
+    This query is a very bad example (and Neo4J Browser warns about this one), because we are actually building the Cartesian product of the two sets of results.
+    According to Neo4J Browser, the number of records would be 16164. <br />
+    A better query is to ask for a Pokemon and its adjacent type:
+    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN p, t LIMIT 25"></app-snippset>
+    Here, the label <b>HAS_TYPE</b> is the label of an edge connecting a Pokemon with its type.
+    And because we both of the variables returned, we can replace <b>p, t</b> with an asterisk.
+    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN * LIMIT 25"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    Nodes and edges can also have multiple labels.
+    For example there are normal Pokemon and legendary ones (which are unique).
+    The latter ones have two labels and can be queried accordingly.
+    <app-snippset query="MATCH (p:Legendary) RETURN p"></app-snippset>
+    <app-snippset query="MATCH (p:Pokemon:Legendary) RETURN p"></app-snippset>
+    <app-snippset query="MATCH (p:Legendary:Pokemon) RETURN p"></app-snippset>
+    All three queries yield the same result.
+  </div>
+
+  <h2>Filtering with Properties</h2>
+  So far, we only selected nodes based on the labels. Most of the time, we also want to filter based on the stored properties.
+
+  <div class="lecture-part">
+    We now want to find the most famous Pokemon.
+    Please be aware that the string comparison is case sensitive and the name is given in lower case.
+    <app-snippset query="MATCH (p:Pokemon) WHERE p.name = 'pikachu' RETURN p"></app-snippset>
+    The filtering is like in SQL done with the <b>WHERE</b> part.
+    Here, we access the property <b>name</b> and compare it against <b>'pikachu'</b>.
+    Another possibilily is to include the name already in the pattern:
+    <app-snippset query="MATCH (p:Pokemon{name: 'pikachu'}) RETURN *"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    We can also filter for an internal id
+    <app-snippset copy="false" query="MATCH (n) WHERE id(n) = 42 RETURN n"></app-snippset>
+    Please note that the id is not really predictable and this query might not yield a meaningful result.
+  </div>
+
+  <div class="lecture-part">
+    We can also filter using all kinds of functions and combinations.
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'pi' RETURN n"></app-snippset>
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'pi' or n.name = 'charizard' RETURN n"></app-snippset>
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'c' and n.pokedexId <= 150 RETURN n"></app-snippset>
+  </div>
+
+  <h2>Filtering with Paths</h2>
+
+  <div class="lecture-part">
+    We can also use the paths to enhance our filtering.
+    For example, we want only fire Pokemon from the first generation (which means a pokedexId <= 150).
+    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(:Type{name: 'fire'}) WHERE p.pokedexId <= 150 RETURN *"></app-snippset>
+    Because we did not assign a variable to <b>:Type</b>, we could use <b>RETURN *</b> and only got the Pokemon.
+  </div>
+
+  <div class="lecture-part">
+    Also edges can have properties.
+    Pokemon might have more than one type.
+    We now query all Pokemon with fire as secondary type.
+    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE{slot: 2}]-(t:Type) WHERE t.name = 'fire' RETURN *"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    We can also check for the absence of a certain path.
+    In the next example, we want all pokemon which cannot evolve further.
+    <app-snippset query="MATCH (p:Pokemon) WHERE NOT (p)-[:EVOLVES_TO]->() RETURN p LIMIT 25"></app-snippset>
+    The <b>()</b> here stands for an arbitrary node we do not restrict in any way and also do not store in a variable. <br />
+    Please note that we used <b>-[]-></b> which is a directed edge instead of the <b>-[]-</b> we used earlier.
+    All edges in Neo4J are directed and we can care about the direction or not.
+  </div>
+
+  <div class="lecture-part">
+    Path patterns can be arbitrary complex.
+    To find all pokemon having only two evolution states, we can use this query:
+    <app-snippset query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO]->(p2:Pokemon) WHERE NOT (p2)-[:EVOLVES_TO]->() RETURN chain"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    For Pokemon with three evolutionary levels, we can use an abbreviation:
+    <app-snippset query="MATCH (p1:Pokemon)-[:EVOLVES_TO*3]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
+    Where we do not see the full path but only start end end.
+    If we again store the paths in a variable, we get all three Pokemon.
+    <app-snippset query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
+  </div>
+
+  <h2>Path finding</h2>
+  <div class="lecture-part">
+    For this part, you should load the Sinnoh example map.
+    <app-database-control button="sinnohMap"></app-database-control>
+    Please note I did some simplifications to the map.
+  </div>
+
+  <div class="lecture-part">
+    First of all, let's have a look at the whole map.
+    <app-snippset query="MATCH (n) WHERE n:City or n:Town or n:Lake RETURN n"></app-snippset>
+    Another way of querying with labels.
+  </div>
+
+  <div class="lecture-part">
+    We can now find paths from <b>Snowpoint City</b> to <b>Hearthome City</b>.
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN p"></app-snippset>
+    And get the lengths of each route.
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p)"></app-snippset>
+    And also both
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    Neo4J also offers some interesting functions like <b>shortestPath()</b> which finds the shortest instance of an path in an (according to the documentation) efficient way.
+    Neo4J Browser advices to use an upper limit here to avoid long execution times
+    <app-snippset query="MATCH p=shortestPath((start:City{name:'Snowpoint City'})-[:ROUTE*..10]-(end:City{name:'Hearthome City'})) RETURN length(p), p"></app-snippset>
+  </div>
+
+
+
+</div>
+
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Sources
+    </mat-panel-title>
+  </mat-expansion-panel-header>
+  <h3>Pokemon data</h3>
+  Many thanks to GitHub user Eevee/Veekun for providing a lot of data about Pokemon in CSV data under MIT License
+  <a href="https://github.com/veekun/pokedex">https://github.com/veekun/pokedex</a>
+
+  <pre>Copyright © 2009 Alex Munroe (Eevee)
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in
+all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+THE SOFTWARE.</pre>
+
+  <h3>jQuery</h3>
+  <a href="https://github.com/jquery/jquery">https://github.com/jquery/jquery</a>
+  <pre>Copyright OpenJS Foundation and other contributors, https://openjsf.org/
+
+Permission is hereby granted, free of charge, to any person obtaining
+a copy of this software and associated documentation files (the
+"Software"), to deal in the Software without restriction, including
+without limitation the rights to use, copy, modify, merge, publish,
+distribute, sublicense, and/or sell copies of the Software, and to
+permit persons to whom the Software is furnished to do so, subject to
+the following conditions:
+
+The above copyright notice and this permission notice shall be
+included in all copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE
+LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION
+OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION
+WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.</pre>
+
+  <h3>highlight.js</h3>
+  <a href="https://github.com/highlightjs/highlight.js">https://github.com/highlightjs/highlight.js</a>
+  <pre>BSD 3-Clause License
+
+Copyright (c) 2006, Ivan Sagalaev.
+All rights reserved.
+
+Redistribution and use in source and binary forms, with or without
+modification, are permitted provided that the following conditions are met:
+
+* Redistributions of source code must retain the above copyright notice, this
+  list of conditions and the following disclaimer.
+
+* Redistributions in binary form must reproduce the above copyright notice,
+  this list of conditions and the following disclaimer in the documentation
+  and/or other materials provided with the distribution.
+
+* Neither the name of the copyright holder nor the names of its
+  contributors may be used to endorse or promote products derived from
+  this software without specific prior written permission.
+
+THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
+AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
+IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE LIABLE
+FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL
+DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR
+SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER
+CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
+OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
+OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.</pre>
+</mat-expansion-panel>
