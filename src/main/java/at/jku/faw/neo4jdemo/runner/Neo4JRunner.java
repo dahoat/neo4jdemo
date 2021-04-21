@@ -9,7 +9,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.stereotype.Component;
-import org.springframework.util.ResourceUtils;
 
 import javax.annotation.PreDestroy;
 import java.io.File;
@@ -21,15 +20,20 @@ import java.util.Stack;
 public class Neo4JRunner implements ApplicationRunner {
 	private static final Logger logger = LoggerFactory.getLogger(Neo4JRunner.class);
 
+	private boolean cleanup = false;
 	private File dbDir;
 	private DatabaseManagementService dbms;
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
 		dbDir = new File("database");
-		if (!dbDir.exists()) {
-			Files.createDirectory(dbDir.toPath());
+		if (dbDir.exists()) {
+			logger.error("The directory 'database' already exists. This application deletes this folder on shutdown. If it is your folder, move it somewhere else, if it belongs to a previous execution of this application, delete it.");
+			System.exit(1);
+			return;
 		}
+		cleanup = true;
+		Files.createDirectory(dbDir.toPath());
 
 		logger.warn("Database location is {}", dbDir.toPath().toAbsolutePath());
 
@@ -41,13 +45,22 @@ public class Neo4JRunner implements ApplicationRunner {
 		if(db.isAvailable(10*1000)) {
 			logger.info("Neo4J is now available.");
 		}
+
 		logger.warn("Press [CTRL]+[C] to shutdown.");
 	}
 
 	@PreDestroy
 	public void onExit() {
-		logger.warn("Shutting database down.");
-		dbms.shutdown();
+		if (!cleanup) {
+			return;
+		}
+
+		try {
+			logger.warn("Shutting database down.");
+			dbms.shutdown();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 
 		logger.warn("Deleting database directory.");
 		try {

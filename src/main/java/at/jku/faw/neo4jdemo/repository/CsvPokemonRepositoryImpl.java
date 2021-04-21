@@ -1,6 +1,9 @@
 package at.jku.faw.neo4jdemo.repository;
 
 import at.jku.faw.neo4jdemo.model.csv.CsvPokemon;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Repository;
 
 import java.io.IOException;
@@ -12,8 +15,9 @@ public class CsvPokemonRepositoryImpl extends GenericCsvRepositoryImpl implement
 
 	private final List<CsvPokemon> csvPokemon = new ArrayList<>();
 
-	public CsvPokemonRepositoryImpl() throws IOException {
-		csvPokemon.addAll(getCsvEntities("data/pokemon_species.csv", CsvPokemon.class));
+	public CsvPokemonRepositoryImpl(ResourceLoader resourceLoader) throws IOException {
+		Resource csvFile = resourceLoader.getResource("classpath:data/pokemon_species.csv");
+		csvPokemon.addAll(getCsvEntities(csvFile, CsvPokemon.class));
 	}
 
 	@Override

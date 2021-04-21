@@ -35,6 +35,77 @@
   <h2>Official Cypher Manual</h2>
   <a href="https://neo4j.com/docs/cypher-manual/current/" target="_blank">https://neo4j.com/docs/cypher-manual/current/</a>
 
+  <h2>Creating our First Entries</h2>
+
+  <div class="lecture-part">
+    We will start by creating our first node
+    <app-snippset query="CREATE ()"></app-snippset>
+    This only inserts an empty node into the database without a label or any content.
+  </div>
+
+  <div class="lecture-part">
+    So next, we create a node with the label <b>Student</b> and a name.
+    <app-snippset query="CREATE (n:Student{name: 'Alex'}) RETURN n"></app-snippset>
+    This time, the node is stored in the variable <b>n</b>, so we can <b>RETURN</b> it at the end of the query.
+  </div>
+
+  <div class="lecture-part">
+    We now also want to add a property <b>study</b> to our student.
+    What we need is to first get the node out of the database again using <b>MATCH</b> like this:
+    <app-snippset query="MATCH (n:Student{name: 'Alex'}) RETURN n"></app-snippset>
+    If this query returns our previously created node, we can enhance the query.
+    <app-snippset query="MATCH (n:Student{name: 'Alex'}) SET n.study = 'computer science' RETURN n"></app-snippset>
+    This gets the node out of the database, modifies it by adding the property study and then returns the modified version back to us.
+  </div>
+
+  <div class="lecture-part">
+    We still have the empty node in the database which we do not need any longer, so we want to remove it.
+    First, we have to make sure, we get match only the node we want to delete:
+    <app-snippset query="MATCH (n) RETURN n"></app-snippset>
+    This has the problem that we also get our students, so we need to filter them out:
+    <app-snippset query="MATCH (n) WHERE NOT n:Student RETURN n"></app-snippset>
+    We could also do this one for the case we have multiple labels in the database:
+    <app-snippset query="MATCH (n) WHERE size(labels(n)) = 0 RETURN n"></app-snippset>
+    For the actual deletion, we replace the <b>RETURN</b> part with <b>DELETE</b>:
+    <app-snippset query="MATCH (n) WHERE size(labels(n)) = 0 DELETE n"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    To add some edges, we need more nodes, so we create a lecture, find our student and attach both with an edge.
+    <app-snippset query="CREATE (l:Lecture{topic: 'GraphDBs'}) WITH l MATCH (s:Student{name: 'Alex'}) WITH l, s CREATE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    After Alex graduated, the nodes is eventually removed, so we try this query:
+    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s" copy="false"></app-snippset>
+    Which won't execute because as Neo4J says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
+    Instead, we exlicilty need to state that we want also the relationships removed by
+    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DETACH DELETE s"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    Sometimes, we want a node, but are not sure, whether it is already existing.
+    For this case, we can use <b>MERGE</b> which tries to lookup a node and nothing is found, creates it as if <b>CREATE</b> was used.
+    For example, to add another student to our (existing) lecture:
+    <app-snippset query="MERGE (s:Student{name: 'Kim'}) WITH s MERGE (l:Lecture{topic: 'GraphDBs'}) WITH s, l MERGE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
+    ATTENTION: If we used
+    <app-snippset query="MERGE (s:Student{name: 'Kim'})-[:LISTENS]->(l:Lecture{topic: 'GraphDBs'}) RETURN *"></app-snippset>
+    We would have got another lecture about graph databases because Neo4J would be looking for a lecture with an incoming <b>LISTENS</b> edge attaching a student named Kim.
+    Actually if you use the second query, change the name and execute it, you would end up with another new lecture with only one student.
+  </div>
+
+  <div class="lecture-part">
+    To remove a property of a node, <b>REMOVE</b> is used and not DELETE.
+    <app-snippset query="MATCH (l:Lecture{topic: 'GraphDBs'}) REMOVE l.topic RETURN l"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    At this point, we finished the basics of creating and deleting nodes and edges and now focus on fetching data.
+    Before that, we can clean up the database, either by
+    <app-snippset query="MATCH (n) DETACH DELETE n"></app-snippset>
+    Matching, detaching and deleting everything in the database, or simply use the button below.
+    <app-database-control button="clear"></app-database-control>
+  </div>
 
   <h2>Simple MATCH queries</h2>
 
@@ -108,9 +179,9 @@
 
   <div class="lecture-part">
     We can also filter using all kinds of functions and combinations.
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'pi' RETURN n"></app-snippset>
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'pi' or n.name = 'charizard' RETURN n"></app-snippset>
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name starts with 'c' and n.pokedexId <= 150 RETURN n"></app-snippset>
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' RETURN n"></app-snippset>
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' or n.name = 'charizard' RETURN n"></app-snippset>
+    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'c' and n.pokedexId <= 150 RETURN n"></app-snippset>
   </div>
 
   <h2>Filtering with Paths</h2>
@@ -146,7 +217,7 @@
 
   <div class="lecture-part">
     For Pokemon with three evolutionary levels, we can use an abbreviation:
-    <app-snippset query="MATCH (p1:Pokemon)-[:EVOLVES_TO*3]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
+    <app-snippset query="MATCH (p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
     Where we do not see the full path but only start end end.
     If we again store the paths in a variable, we get all three Pokemon.
     <app-snippset query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
