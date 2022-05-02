@@ -27,7 +27,7 @@
   <div class="lecture-part">
     Nodes and edges can have multiple labels which are each started by a colon. <br />
     The case is not mandatory but significant.
-    <app-snippset query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippset>
+    <app-snippset copy="false" query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippset>
   </div>
 
 
@@ -77,7 +77,7 @@
 
   <div class="lecture-part">
     After Alex graduated, the nodes is eventually removed, so we try this query:
-    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s" copy="false"></app-snippset>
+    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s"></app-snippset>
     Which won't execute because as Neo4J says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
     Instead, we exlicilty need to state that we want also the relationships removed by
     <app-snippset query="MATCH (s:Student{name: 'Alex'}) DETACH DELETE s"></app-snippset>
@@ -243,6 +243,17 @@
     <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p)"></app-snippset>
     And also both
     <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
+    So far, we did not sort anything.<br />
+    To get the routes sorted by length, simply add a <b>ORDER BY</b> part.
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p ORDER BY length(p)"></app-snippset>
+    We can also use aliases here.
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength"></app-snippset>
+    And we can specify the direction in which to sort.
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength ASC"></app-snippset>
+    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength DESC"></app-snippset>
   </div>
 
   <div class="lecture-part">
