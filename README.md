@@ -1,6 +1,6 @@
 # Neo4JDemo
 This project is used for a lecture at the Johannes Kepler University Linz (JKU) in Austria. 
-You are free to using it also if you do not participate in the course. 
+You are free to use it also if you do not participate in the course. 
 
 ---
 
@@ -17,14 +17,19 @@ Otherwise, the folder is deleted on application shutdown.
 1. Download the latest release at the releases page https://github.com/dahoat/neo4jdemo/releases
 1. Open a cmd/terminal/... and navigate to the JAR file
 1. Make sure no directory 'database' is present in the current directory
-1. Execute `java --illegal-access=permit -jar neo4jdemo.jar`
+1. Execute `java -jar neo4jdemo.jar`
 1. Navigate to http://localhost:8080/
-1. When you are finished, click into the console and press [Ctrl]+[C] to shutdown the application
+1. When you are finished, click into the console and press [Ctrl]+[C] to shut down the application
 1. Cleanup 'database' in case of an error. 
 
 ### Running from your IDE
 Clone the project and set up the Spring Boot Application.  
 The Angular project located in the folder 'frontend' is only needed, if you would like to change the website with the examples. 
 In that case, you have to use the command `ng build-spring` which will compile the angular project and store the result in 'resources/static' in the Spring project.
+
+### Building
+To build the project, use: `mvn package -DskipTests`
+This will also trigger a build of the frontend. 
+
 
 ---
