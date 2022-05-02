@@ -14,7 +14,7 @@
     <name>Neo4J Demo</name>
     <description>Demo project for Spring Boot</description>
     <properties>
-        <java.version>11</java.version>
+        <java.version>1.8</java.version>
     </properties>
     <dependencies>
         <dependency>
@@ -35,31 +35,31 @@
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j</artifactId>
-            <version>4.2.5</version>
+            <version>4.4.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.neo4j.client</groupId>
             <artifactId>neo4j-browser</artifactId>
-            <version>4.2.5</version>
+            <version>4.4.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-core</artifactId>
-            <version>3.2.18</version>
+            <version>3.2.32</version>
         </dependency>
 
         <dependency>
             <groupId>org.neo4j</groupId>
             <artifactId>neo4j-ogm-bolt-driver</artifactId>
-            <version>3.2.18</version>
+            <version>3.2.32</version>
         </dependency>
 
         <dependency>
             <groupId>com.opencsv</groupId>
             <artifactId>opencsv</artifactId>
-            <version>4.6</version>
+            <version>5.6</version>
         </dependency>
 
 
