@@ -85,7 +85,7 @@
 
   <div class="lecture-part">
     Sometimes, we want a node, but are not sure, whether it is already existing.
-    For this case, we can use <b>MERGE</b> which tries to lookup a node and nothing is found, creates it as if <b>CREATE</b> was used.
+    For this case, we can use <b>MERGE</b> which tries to lookup a node and if nothing is found, creates it as if <b>CREATE</b> was used.
     For example, to add another student to our (existing) lecture:
     <app-snippset query="MERGE (s:Student{name: 'Kim'}) WITH s MERGE (l:Lecture{topic: 'GraphDBs'}) WITH s, l MERGE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
     ATTENTION: If we used
