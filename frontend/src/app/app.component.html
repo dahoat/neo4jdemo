@@ -76,6 +76,15 @@
   </div>
 
   <div class="lecture-part">
+    If we want to separate different parts of a query and the variables used there, we can use the <b>WITH</b> keyword.
+    It works similar to RETURN but indicates there are more query parts to execute.
+    Only variables stated after WITH are available in the remainder of the query.
+    <app-snippset query="MATCH (n:Student {name: 'Alex'}) WITH n as student MATCH (student)-[:LISTENS]-(l:Lecture) RETURN l"></app-snippset>
+    However this leads to an error:
+    <app-snippset query="MATCH (n:Student)-[:LISTENS]-(l:Lecture) WITH n as student WHERE student.name = 'Alex' RETURN l"></app-snippset>
+  </div>
+
+  <div class="lecture-part">
     After Alex graduated, the nodes is eventually removed, so we try this query:
     <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s"></app-snippset>
     Which won't execute because as Neo4J says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
