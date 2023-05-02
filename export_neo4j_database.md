@@ -1,11 +1,9 @@
 Export Neo4J Database to Cypher Script
 ===
 
-Because the question arose, how to export the database for submission in case you do not want to give us your original queries.
-
 This guide does not work for the embedded Version of Neo4J provided with the Pokemon example. 
 
-In case you did your work in this database, DO NOT TERMINATE THE APPLICATION. In the working directory (the one you placed the neo4jdemo.jar), there is a folder 'database' containing the temporary database files which gets deleted on application termination. Copy this folder to a different location to rescue your database.
+In case you did your work in this database, DO NOT TERMINATE THE APPLICATION. In the working directory (the one you placed the neo4jdemo-x.x.x.jar), there is a folder 'database' containing the temporary database files which gets deleted on application termination. Copy this folder to a different location to rescue your database.
 
 # Neo4J Server Community
 This guide assumes you use Neo4J Server Community 

@@ -10,17 +10,17 @@ If a folder of the same name is already present, the application will abort.
 Otherwise, the folder is deleted on application shutdown.
 
 ### Requirements
-- Java 11 or above
-- A folder without 'database' in it
+- Java 17 or above
+- A folder without a subdirectory `database` in it
 
 ### Running from the console
 1. Download the latest release at the releases page https://github.com/dahoat/neo4jdemo/releases
-1. Open a cmd/terminal/... and navigate to the JAR file
-1. Make sure no directory 'database' is present in the current directory
-1. Execute `java -jar neo4jdemo.jar`
-1. Navigate to http://localhost:8080/
-1. When you are finished, click into the console and press [Ctrl]+[C] to shut down the application
-1. Cleanup 'database' in case of an error. 
+2. Open a cmd/terminal/... and navigate to the JAR file
+3. Make sure no subdirectory `database` is present in the current directory
+4. Execute `java -jar neo4jdemo-1.2.0.jar`
+5. Navigate to http://localhost:8080/
+6. When you are finished, click into the console and press [Ctrl]+[C] to shut down the application
+7. Cleanup `database` in case of an error. 
 
 ### Running from your IDE
 Clone the project and set up the Spring Boot Application.  
