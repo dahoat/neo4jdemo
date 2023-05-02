@@ -1,6 +1,5 @@
 package at.jku.faw.neo4jdemo.repository;
 
-import at.jku.faw.neo4jdemo.model.neo4j.Type;
 import org.neo4j.ogm.session.Session;
 import org.neo4j.ogm.session.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;

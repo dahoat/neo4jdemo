@@ -8,11 +8,11 @@ import {BrowserAnimationsModule} from '@angular/platform-browser/animations';
 import {MatDividerModule} from '@angular/material/divider';
 import { BrowserComponent } from './components/browser/browser.component';
 import { DatabaseControlComponent } from './components/database-control/database-control.component';
-import {MatButtonModule} from '@angular/material/button';
 import {HttpClientModule} from '@angular/common/http';
 import { SnippetComponent } from './components/snippset/snippet.component';
 import {HIGHLIGHT_OPTIONS, HighlightModule} from 'ngx-highlightjs';
 import {ClipboardModule} from '@angular/cdk/clipboard';
+import {MatButtonModule} from '@angular/material/button';
 
 @NgModule({
   declarations: [

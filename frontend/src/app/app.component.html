@@ -9,7 +9,7 @@
   <h2>Basic building blocks</h2>
 
   <div class="lecture-part">
-    Two parenthesis denote a node in cypher
+    Two parenthesis denote a node in Cypher
     <app-snippset query="()" copy="false"></app-snippset>
   </div>
 
@@ -21,12 +21,12 @@
 
   <div class="lecture-part">
     Nodes and edges are connected by dashes and less/greater signs
-    <app-snippset query="-- -> <-" copy="false"></app-snippset>
+    <app-snippset query="-- --> <--" copy="false"></app-snippset>
   </div>
 
   <div class="lecture-part">
     Nodes and edges can have multiple labels which are each started by a colon. <br />
-    The case is not mandatory but significant.
+    The case is only a convention but significant.
     <app-snippset copy="false" query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippset>
   </div>
 
@@ -87,7 +87,7 @@
   <div class="lecture-part">
     After Alex graduated, the nodes is eventually removed, so we try this query:
     <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s"></app-snippset>
-    Which won't execute because as Neo4J says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
+    Which won't execute because as Neo4j says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
     Instead, we exlicilty need to state that we want also the relationships removed by
     <app-snippset query="MATCH (s:Student{name: 'Alex'}) DETACH DELETE s"></app-snippset>
   </div>
@@ -99,7 +99,7 @@
     <app-snippset query="MERGE (s:Student{name: 'Kim'}) WITH s MERGE (l:Lecture{topic: 'GraphDBs'}) WITH s, l MERGE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
     ATTENTION: If we used
     <app-snippset query="MERGE (s:Student{name: 'Kim'})-[:LISTENS]->(l:Lecture{topic: 'GraphDBs'}) RETURN *"></app-snippset>
-    We would have got another lecture about graph databases because Neo4J would be looking for a lecture with an incoming <b>LISTENS</b> edge attaching a student named Kim.
+    We would have got another lecture about graph databases because Neo4j would be looking for a lecture with an incoming <b>LISTENS</b> edge attaching a student named Kim.
     Actually if you use the second query, change the name and execute it, you would end up with another new lecture with only one student.
   </div>
 
@@ -148,12 +148,12 @@
     In this example we combine the previous two queries by specifying two patterns.
     <app-snippset query="MATCH (p:Pokemon), (t:Type) RETURN p, t LIMIT 25"></app-snippset>
     We now limit the number of results again to 25.
-    This query is a very bad example (and Neo4J Browser warns about this one), because we are actually building the Cartesian product of the two sets of results.
-    According to Neo4J Browser, the number of records would be 16164. <br />
+    This query is a very bad example (and Neo4j Browser warns about this one), because we are actually building the Cartesian product of the two sets of results.
+    According to Neo4j Browser, the number of records would be 16164. <br />
     A better query is to ask for a Pokemon and its adjacent type:
     <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN p, t LIMIT 25"></app-snippset>
     Here, the label <b>HAS_TYPE</b> is the label of an edge connecting a Pokemon with its type.
-    And because we both of the variables returned, we can replace <b>p, t</b> with an asterisk.
+    And because both of the variables are returned, we can replace <b>p, t</b> with an asterisk.
     <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN * LIMIT 25"></app-snippset>
   </div>
 
@@ -184,6 +184,13 @@
     We can also filter for an internal id
     <app-snippset copy="false" query="MATCH (n) WHERE id(n) = 42 RETURN n"></app-snippset>
     Please note that the id is not really predictable and this query might not yield a meaningful result.
+    Furthermore, as of Neo4j version 5, using <a href="https://neo4j.com/docs/cypher-manual/current/functions/scalar/#functions-id" target="_blank">id()</a>
+    is deprecated in favor of <a href="https://neo4j.com/docs/cypher-manual/current/functions/scalar/#functions-elementid" target="_blank">elementId()</a>.
+  </div>
+
+  <div class="lecture-part">
+    This query shows us the results for both functions on the same node.
+    <app-snippset query="MATCH (n) RETURN id(n), elementId(n) LIMIT 10"></app-snippset>
   </div>
 
   <div class="lecture-part">
@@ -215,7 +222,7 @@
     <app-snippset query="MATCH (p:Pokemon) WHERE NOT (p)-[:EVOLVES_TO]->() RETURN p LIMIT 25"></app-snippset>
     The <b>()</b> here stands for an arbitrary node we do not restrict in any way and also do not store in a variable. <br />
     Please note that we used <b>-[]-></b> which is a directed edge instead of the <b>-[]-</b> we used earlier.
-    All edges in Neo4J are directed and we can care about the direction or not.
+    All edges in Neo4j are directed and we can care about the direction or not.
   </div>
 
   <div class="lecture-part">
@@ -266,8 +273,8 @@
   </div>
 
   <div class="lecture-part">
-    Neo4J also offers some interesting functions like <b>shortestPath()</b> which finds the shortest instance of an path in an (according to the documentation) efficient way.
-    Neo4J Browser advices to use an upper limit here to avoid long execution times
+    Neo4j also offers some interesting functions like <b>shortestPath()</b> which finds the shortest instance of an path in an (according to the documentation) efficient way.
+    Neo4j advices to use an upper limit here to avoid long execution times
     <app-snippset query="MATCH p=shortestPath((start:City{name:'Snowpoint City'})-[:ROUTE*..10]-(end:City{name:'Hearthome City'})) RETURN length(p), p"></app-snippset>
   </div>
 
@@ -275,7 +282,7 @@
 
 </div>
 
-<mat-expansion-panel>
+<mat-expansion-panel class="no-print">
   <mat-expansion-panel-header>
     <mat-panel-title>
       Sources

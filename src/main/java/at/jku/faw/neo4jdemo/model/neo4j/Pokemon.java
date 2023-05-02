@@ -19,7 +19,7 @@ public class Pokemon {
 	@Relationship(value = "HAS_TYPE")
 	private Set<TypeRelation> type;
 
-	@Relationship(value = "EVOLVES_TO", direction = Relationship.INCOMING)
+	@Relationship(value = "EVOLVES_TO", direction = Relationship.Direction.INCOMING)
 	private Pokemon evolvesTo;
 
 	public Long getId() {
