@@ -10,7 +10,7 @@ If a folder of the same name is already present, the application will abort.
 Otherwise, the folder is deleted on application shutdown.
 
 ### Requirements
-- Java 17 or above
+- Java 21 or above
 - A folder without a subdirectory `database` in it
 
 ### Running from the console

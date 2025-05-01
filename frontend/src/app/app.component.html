@@ -150,6 +150,8 @@
     We now limit the number of results again to 25.
     This query is a very bad example (and Neo4j Browser warns about this one), because we are actually building the Cartesian product of the two sets of results.
     According to Neo4j Browser, the number of records would be 16164. <br />
+    To make it more obvious in the table view, we restrict the results to the names of Pokemon and types:
+    <app-snippset query="MATCH (p:Pokemon), (t:Type) RETURN p.name, t.name LIMIT 25"></app-snippset>
     A better query is to ask for a Pokemon and its adjacent type:
     <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN p, t LIMIT 25"></app-snippset>
     Here, the label <b>HAS_TYPE</b> is the label of an edge connecting a Pokemon with its type.
