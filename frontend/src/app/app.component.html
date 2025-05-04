@@ -10,24 +10,24 @@
 
   <div class="lecture-part">
     Two parenthesis denote a node in Cypher
-    <app-snippset query="()" copy="false"></app-snippset>
+    <app-snippet query="()" copy="false"></app-snippet>
   </div>
 
   <div class="lecture-part">
     Two brackets are used for referencing edges
-    <app-snippset query="[]" copy="false"></app-snippset>
+    <app-snippet query="[]" copy="false"></app-snippet>
   </div>
 
 
   <div class="lecture-part">
     Nodes and edges are connected by dashes and less/greater signs
-    <app-snippset query="-- --> <--" copy="false"></app-snippset>
+    <app-snippet query="-- --> <--" copy="false"></app-snippet>
   </div>
 
   <div class="lecture-part">
     Nodes and edges can have multiple labels which are each started by a colon. <br />
     The case is only a convention but significant.
-    <app-snippset copy="false" query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippset>
+    <app-snippet copy="false" query=":Label1 :Label1:Label2 :LABEL_FOR_AN_EDGE"></app-snippet>
   </div>
 
 
@@ -39,79 +39,79 @@
 
   <div class="lecture-part">
     We will start by creating our first node
-    <app-snippset query="CREATE ()"></app-snippset>
+    <app-snippet query="CREATE ()"></app-snippet>
     This only inserts an empty node into the database without a label or any content.
   </div>
 
   <div class="lecture-part">
     So next, we create a node with the label <b>Student</b> and a name.
-    <app-snippset query="CREATE (n:Student{name: 'Alex'}) RETURN n"></app-snippset>
+    <app-snippet query="CREATE (n:Student{name: 'Alex'}) RETURN n"></app-snippet>
     This time, the node is stored in the variable <b>n</b>, so we can <b>RETURN</b> it at the end of the query.
   </div>
 
   <div class="lecture-part">
     We now also want to add a property <b>study</b> to our student.
     What we need is to first get the node out of the database again using <b>MATCH</b> like this:
-    <app-snippset query="MATCH (n:Student{name: 'Alex'}) RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n:Student{name: 'Alex'}) RETURN n"></app-snippet>
     If this query returns our previously created node, we can enhance the query.
-    <app-snippset query="MATCH (n:Student{name: 'Alex'}) SET n.study = 'computer science' RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n:Student{name: 'Alex'}) SET n.study = 'computer science' RETURN n"></app-snippet>
     This gets the node out of the database, modifies it by adding the property study and then returns the modified version back to us.
   </div>
 
   <div class="lecture-part">
     We still have the empty node in the database which we do not need any longer, so we want to remove it.
     First, we have to make sure, we get match only the node we want to delete:
-    <app-snippset query="MATCH (n) RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n) RETURN n"></app-snippet>
     This has the problem that we also get our students, so we need to filter them out:
-    <app-snippset query="MATCH (n) WHERE NOT n:Student RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n) WHERE NOT n:Student RETURN n"></app-snippet>
     We could also do this one for the case we have multiple labels in the database:
-    <app-snippset query="MATCH (n) WHERE size(labels(n)) = 0 RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n) WHERE size(labels(n)) = 0 RETURN n"></app-snippet>
     For the actual deletion, we replace the <b>RETURN</b> part with <b>DELETE</b>:
-    <app-snippset query="MATCH (n) WHERE size(labels(n)) = 0 DELETE n"></app-snippset>
+    <app-snippet query="MATCH (n) WHERE size(labels(n)) = 0 DELETE n"></app-snippet>
   </div>
 
   <div class="lecture-part">
     To add some edges, we need more nodes, so we create a lecture, find our student and attach both with an edge.
-    <app-snippset query="CREATE (l:Lecture{topic: 'GraphDBs'}) WITH l MATCH (s:Student{name: 'Alex'}) WITH l, s CREATE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
+    <app-snippet query="CREATE (l:Lecture{topic: 'GraphDBs'}) WITH l MATCH (s:Student{name: 'Alex'}) WITH l, s CREATE (s)-[:LISTENS]->(l) RETURN *"></app-snippet>
   </div>
 
   <div class="lecture-part">
     If we want to separate different parts of a query and the variables used there, we can use the <b>WITH</b> keyword.
     It works similar to RETURN but indicates there are more query parts to execute.
     Only variables stated after WITH are available in the remainder of the query.
-    <app-snippset query="MATCH (n:Student {name: 'Alex'}) WITH n as student MATCH (student)-[:LISTENS]-(l:Lecture) RETURN l"></app-snippset>
+    <app-snippet query="MATCH (n:Student {name: 'Alex'}) WITH n as student MATCH (student)-[:LISTENS]-(l:Lecture) RETURN l"></app-snippet>
     However this leads to an error:
-    <app-snippset query="MATCH (n:Student)-[:LISTENS]-(l:Lecture) WITH n as student WHERE student.name = 'Alex' RETURN l"></app-snippset>
+    <app-snippet query="MATCH (n:Student)-[:LISTENS]-(l:Lecture) WITH n as student WHERE student.name = 'Alex' RETURN l"></app-snippet>
   </div>
 
   <div class="lecture-part">
     After Alex graduated, the nodes is eventually removed, so we try this query:
-    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DELETE s"></app-snippset>
+    <app-snippet query="MATCH (s:Student{name: 'Alex'}) DELETE s"></app-snippet>
     Which won't execute because as Neo4j says <em>Cannot delete node<0>, because it still has relationships. To delete this node, you must first delete its relationships.</em>
     Instead, we exlicilty need to state that we want also the relationships removed by
-    <app-snippset query="MATCH (s:Student{name: 'Alex'}) DETACH DELETE s"></app-snippset>
+    <app-snippet query="MATCH (s:Student{name: 'Alex'}) DETACH DELETE s"></app-snippet>
   </div>
 
   <div class="lecture-part">
     Sometimes, we want a node, but are not sure, whether it is already existing.
     For this case, we can use <b>MERGE</b> which tries to lookup a node and if nothing is found, creates it as if <b>CREATE</b> was used.
     For example, to add another student to our (existing) lecture:
-    <app-snippset query="MERGE (s:Student{name: 'Kim'}) WITH s MERGE (l:Lecture{topic: 'GraphDBs'}) WITH s, l MERGE (s)-[:LISTENS]->(l) RETURN *"></app-snippset>
+    <app-snippet query="MERGE (s:Student{name: 'Kim'}) WITH s MERGE (l:Lecture{topic: 'GraphDBs'}) WITH s, l MERGE (s)-[:LISTENS]->(l) RETURN *"></app-snippet>
     ATTENTION: If we used
-    <app-snippset query="MERGE (s:Student{name: 'Kim'})-[:LISTENS]->(l:Lecture{topic: 'GraphDBs'}) RETURN *"></app-snippset>
+    <app-snippet query="MERGE (s:Student{name: 'Kim'})-[:LISTENS]->(l:Lecture{topic: 'GraphDBs'}) RETURN *"></app-snippet>
     We would have got another lecture about graph databases because Neo4j would be looking for a lecture with an incoming <b>LISTENS</b> edge attaching a student named Kim.
     Actually if you use the second query, change the name and execute it, you would end up with another new lecture with only one student.
   </div>
 
   <div class="lecture-part">
     To remove a property of a node, <b>REMOVE</b> is used and not DELETE.
-    <app-snippset query="MATCH (l:Lecture{topic: 'GraphDBs'}) REMOVE l.topic RETURN l"></app-snippset>
+    <app-snippet query="MATCH (l:Lecture{topic: 'GraphDBs'}) REMOVE l.topic RETURN l"></app-snippet>
   </div>
 
   <div class="lecture-part">
     At this point, we finished the basics of creating and deleting nodes and edges and now focus on fetching data.
     Before that, we can clean up the database, either by
-    <app-snippset query="MATCH (n) DETACH DELETE n"></app-snippset>
+    <app-snippet query="MATCH (n) DETACH DELETE n"></app-snippet>
     Matching, detaching and deleting everything in the database, or simply use the button below.
     <app-database-control button="clear"></app-database-control>
   </div>
@@ -125,7 +125,7 @@
 
   <div class="lecture-part">
     We will start by simply fetching all nodes in the database. Because there might be a lot of them, we limit the number of results.
-    <app-snippset query="MATCH (node) RETURN node LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (node) RETURN node LIMIT 25"></app-snippet>
     The <b>MATCH</b> keyword tells the database we want to fetch some data according to a certain pattern which is/are given afterwards.
     All elements matching parts of the pattern are stored in a variable if one is given, in our case it is called <b>node</b>.
     The last part of the query is the <b>RETURN</b> after which all variables we want in our result are specified, in our case only <b>node</b>.
@@ -135,37 +135,37 @@
 
   <div class="lecture-part">
     If we only want a specific type of nodes, we can specify this by adding a label to the pattern.
-    <app-snippset query="MATCH (pokemon:Pokemon) RETURN pokemon LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (pokemon:Pokemon) RETURN pokemon LIMIT 25"></app-snippet>
   </div>
 
   <div class="lecture-part">
     To show the difference, we now query the types Pokemon can have.
-    <app-snippset query="MATCH (t:Type) RETURN t"></app-snippset>
+    <app-snippet query="MATCH (t:Type) RETURN t"></app-snippet>
     Because there are only 18, we can omit the <b>LIMIT</b>.
   </div>
 
   <div class="lecture-part">
     In this example we combine the previous two queries by specifying two patterns.
-    <app-snippset query="MATCH (p:Pokemon), (t:Type) RETURN p, t LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon), (t:Type) RETURN p, t LIMIT 25"></app-snippet>
     We now limit the number of results again to 25.
     This query is a very bad example (and Neo4j Browser warns about this one), because we are actually building the Cartesian product of the two sets of results.
     According to Neo4j Browser, the number of records would be 16164. <br />
     To make it more obvious in the table view, we restrict the results to the names of Pokemon and types:
-    <app-snippset query="MATCH (p:Pokemon), (t:Type) RETURN p.name, t.name LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon), (t:Type) RETURN p.name, t.name LIMIT 25"></app-snippet>
     A better query is to ask for a Pokemon and its adjacent type:
-    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN p, t LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN p, t LIMIT 25"></app-snippet>
     Here, the label <b>HAS_TYPE</b> is the label of an edge connecting a Pokemon with its type.
     And because both of the variables are returned, we can replace <b>p, t</b> with an asterisk.
-    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN * LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon)-[:HAS_TYPE]-(t:Type) RETURN * LIMIT 25"></app-snippet>
   </div>
 
   <div class="lecture-part">
     Nodes and edges can also have multiple labels.
     For example there are normal Pokemon and legendary ones (which are unique).
     The latter ones have two labels and can be queried accordingly.
-    <app-snippset query="MATCH (p:Legendary) RETURN p"></app-snippset>
-    <app-snippset query="MATCH (p:Pokemon:Legendary) RETURN p"></app-snippset>
-    <app-snippset query="MATCH (p:Legendary:Pokemon) RETURN p"></app-snippset>
+    <app-snippet query="MATCH (p:Legendary) RETURN p"></app-snippet>
+    <app-snippet query="MATCH (p:Pokemon:Legendary) RETURN p"></app-snippet>
+    <app-snippet query="MATCH (p:Legendary:Pokemon) RETURN p"></app-snippet>
     All three queries yield the same result.
   </div>
 
@@ -175,16 +175,16 @@
   <div class="lecture-part">
     We now want to find the most famous Pokemon.
     Please be aware that the string comparison is case sensitive and the name is given in lower case.
-    <app-snippset query="MATCH (p:Pokemon) WHERE p.name = 'pikachu' RETURN p"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon) WHERE p.name = 'pikachu' RETURN p"></app-snippet>
     The filtering is like in SQL done with the <b>WHERE</b> part.
     Here, we access the property <b>name</b> and compare it against <b>'pikachu'</b>.
     Another possibilily is to include the name already in the pattern:
-    <app-snippset query="MATCH (p:Pokemon{name: 'pikachu'}) RETURN *"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon{name: 'pikachu'}) RETURN *"></app-snippet>
   </div>
 
   <div class="lecture-part">
     We can also filter for an internal id
-    <app-snippset copy="false" query="MATCH (n) WHERE id(n) = 42 RETURN n"></app-snippset>
+    <app-snippet copy="false" query="MATCH (n) WHERE id(n) = 42 RETURN n"></app-snippet>
     Please note that the id is not really predictable and this query might not yield a meaningful result.
     Furthermore, as of Neo4j version 5, using <a href="https://neo4j.com/docs/cypher-manual/current/functions/scalar/#functions-id" target="_blank">id()</a>
     is deprecated in favor of <a href="https://neo4j.com/docs/cypher-manual/current/functions/scalar/#functions-elementid" target="_blank">elementId()</a>.
@@ -192,14 +192,14 @@
 
   <div class="lecture-part">
     This query shows us the results for both functions on the same node.
-    <app-snippset query="MATCH (n) RETURN id(n), elementId(n) LIMIT 10"></app-snippset>
+    <app-snippet query="MATCH (n) RETURN id(n), elementId(n) LIMIT 10"></app-snippet>
   </div>
 
   <div class="lecture-part">
     We can also filter using all kinds of functions and combinations.
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' RETURN n"></app-snippset>
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' or n.name = 'charizard' RETURN n"></app-snippset>
-    <app-snippset query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'c' and n.pokedexId <= 150 RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' RETURN n"></app-snippet>
+    <app-snippet query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'pi' or n.name = 'charizard' RETURN n"></app-snippet>
+    <app-snippet query="MATCH (n:Pokemon) WHERE n.name STARTS WITH 'c' and n.pokedexId <= 150 RETURN n"></app-snippet>
   </div>
 
   <h2>Filtering with Paths</h2>
@@ -207,7 +207,7 @@
   <div class="lecture-part">
     We can also use the paths to enhance our filtering.
     For example, we want only fire Pokemon from the first generation (which means a pokedexId <= 150).
-    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE]-(:Type{name: 'fire'}) WHERE p.pokedexId <= 150 RETURN *"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon)-[:HAS_TYPE]-(:Type{name: 'fire'}) WHERE p.pokedexId <= 150 RETURN *"></app-snippet>
     Because we did not assign a variable to <b>:Type</b>, we could use <b>RETURN *</b> and only got the Pokemon.
   </div>
 
@@ -215,13 +215,13 @@
     Also edges can have properties.
     Pokemon might have more than one type.
     We now query all Pokemon with fire as secondary type.
-    <app-snippset query="MATCH (p:Pokemon)-[:HAS_TYPE{slot: 2}]-(t:Type) WHERE t.name = 'fire' RETURN *"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon)-[:HAS_TYPE{slot: 2}]-(t:Type) WHERE t.name = 'fire' RETURN *"></app-snippet>
   </div>
 
   <div class="lecture-part">
     We can also check for the absence of a certain path.
     In the next example, we want all pokemon which cannot evolve further.
-    <app-snippset query="MATCH (p:Pokemon) WHERE NOT (p)-[:EVOLVES_TO]->() RETURN p LIMIT 25"></app-snippset>
+    <app-snippet query="MATCH (p:Pokemon) WHERE NOT (p)-[:EVOLVES_TO]->() RETURN p LIMIT 25"></app-snippet>
     The <b>()</b> here stands for an arbitrary node we do not restrict in any way and also do not store in a variable. <br />
     Please note that we used <b>-[]-></b> which is a directed edge instead of the <b>-[]-</b> we used earlier.
     All edges in Neo4j are directed and we can care about the direction or not.
@@ -230,15 +230,15 @@
   <div class="lecture-part">
     Path patterns can be arbitrary complex.
     To find all pokemon having only two evolution states, we can use this query:
-    <app-snippset query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO]->(p2:Pokemon) WHERE NOT (p2)-[:EVOLVES_TO]->() RETURN chain"></app-snippset>
+    <app-snippet query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO]->(p2:Pokemon) WHERE NOT (p2)-[:EVOLVES_TO]->() RETURN chain"></app-snippet>
   </div>
 
   <div class="lecture-part">
     For Pokemon with three evolutionary levels, we can use an abbreviation:
-    <app-snippset query="MATCH (p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
+    <app-snippet query="MATCH (p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippet>
     Where we do not see the full path but only start end end.
     If we again store the paths in a variable, we get all three Pokemon.
-    <app-snippset query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippset>
+    <app-snippet query="MATCH chain=(p1:Pokemon)-[:EVOLVES_TO*2]->(p3:Pokemon) WHERE NOT (p3)-[:EVOLVES_TO]->() RETURN *"></app-snippet>
   </div>
 
   <h2>Path finding</h2>
@@ -250,34 +250,34 @@
 
   <div class="lecture-part">
     First of all, let's have a look at the whole map.
-    <app-snippset query="MATCH (n) WHERE n:City or n:Town or n:Lake RETURN n"></app-snippset>
+    <app-snippet query="MATCH (n) WHERE n:City or n:Town or n:Lake RETURN n"></app-snippet>
     Another way of querying with labels.
   </div>
 
   <div class="lecture-part">
     We can now find paths from <b>Snowpoint City</b> to <b>Hearthome City</b>.
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN p"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN p"></app-snippet>
     And get the lengths of each route.
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p)"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p)"></app-snippet>
     And also both
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p"></app-snippet>
   </div>
 
   <div class="lecture-part">
     So far, we did not sort anything.<br />
     To get the routes sorted by length, simply add a <b>ORDER BY</b> part.
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p ORDER BY length(p)"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p), p ORDER BY length(p)"></app-snippet>
     We can also use aliases here.
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength"></app-snippet>
     And we can specify the direction in which to sort.
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength ASC"></app-snippset>
-    <app-snippset query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength DESC"></app-snippset>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength ASC"></app-snippet>
+    <app-snippet query="MATCH p=(start:City{name:'Snowpoint City'})-[:ROUTE*]-(end:City{name:'Hearthome City'}) RETURN length(p) as pathLength, p ORDER BY pathLength DESC"></app-snippet>
   </div>
 
   <div class="lecture-part">
     Neo4j also offers some interesting functions like <b>shortestPath()</b> which finds the shortest instance of an path in an (according to the documentation) efficient way.
     Neo4j advices to use an upper limit here to avoid long execution times
-    <app-snippset query="MATCH p=shortestPath((start:City{name:'Snowpoint City'})-[:ROUTE*..10]-(end:City{name:'Hearthome City'})) RETURN length(p), p"></app-snippset>
+    <app-snippet query="MATCH p=shortestPath((start:City{name:'Snowpoint City'})-[:ROUTE*..10]-(end:City{name:'Hearthome City'})) RETURN length(p), p"></app-snippet>
   </div>
 
 

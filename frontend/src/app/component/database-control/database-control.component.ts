@@ -1,19 +1,25 @@
-import {Component, Input, OnInit} from '@angular/core';
-import {DatabaseService} from '../../services/database.service';
+import {Component, Input} from '@angular/core';
+import {MatButton} from '@angular/material/button';
+import {NgIf} from '@angular/common';
+import {DatabaseService} from '../../shared/database.service';
 
 @Component({
   selector: 'app-database-control',
+    imports: [
+        MatButton,
+        NgIf
+    ],
   templateUrl: './database-control.component.html',
-  styleUrls: ['./database-control.component.css']
+  styleUrl: './database-control.component.scss'
 })
-export class DatabaseControlComponent implements OnInit {
-  clearDatabaseMessage: string = null;
-  loadPokemonMessage: string = null;
-  loadSinnohMapMessage: string = null;
+export class DatabaseControlComponent {
+  clearDatabaseMessage: string|null = null;
+  loadPokemonMessage: string|null = null;
+  loadSinnohMapMessage: string|null = null;
   transactionInProgress = false;
 
   @Input()
-  button: string = null;
+  button: string|null = null;
 
   constructor(private databaseService: DatabaseService) {
   }
@@ -67,5 +73,4 @@ export class DatabaseControlComponent implements OnInit {
         alert('An error occured, see the console.');
       });
   }
-
 }
